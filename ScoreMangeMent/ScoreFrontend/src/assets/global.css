@@ -1,0 +1,28 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.card{
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.12);
+}
+/* 新增全局滚动条隐藏样式 */
+::-webkit-scrollbar {
+    display: none; /* 隐藏Chrome/Safari滚动条 */
+}
+
+html, body {
+    scrollbar-width: none; /* 隐藏Firefox滚动条 */
+    -ms-overflow-style: none; /* 隐藏IE/Edge滚动条 */
+}
+
+/* 保持原容器样式（可选，若上述全局生效则可保留或删除） */
+#formContainer {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}

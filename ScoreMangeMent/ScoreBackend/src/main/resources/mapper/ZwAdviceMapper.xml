@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.ZwAdviceMapper">
+
+    <resultMap id="ZwAdviceResultMap" type="org.gzw.backend.entity.ZwAdvice">
+        <id property="adviceId" column="ADVICE_ID"/>
+        <result property="recipientId" column="RECIPIENT_ID"/>
+        <result property="senderId" column="SENDER_ID"/>
+        <result property="adviceType" column="ADVICE_TYPE"/>
+        <result property="adviceStatus" column="ADVICE_STATUS"/>
+        <result property="adviceDesc" column="ADVICE_DESC"/>
+        <result property="senderType" column="SENDER_TYPE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+    </resultMap>
+
+    <resultMap id="ZwAdviceVOResultMap" type="org.gzw.backend.entity.vo.ZwAdviceVO">
+        <id property="adviceId" column="ADVICE_ID"/>
+        <result property="recipientId" column="RECIPIENT_ID"/>
+        <result property="recipientName" column="RECIPIENT_NAME"/>
+        <result property="senderId" column="SENDER_ID"/>
+        <result property="senderName" column="SENDER_NAME"/>
+        <result property="adviceType" column="ADVICE_TYPE"/>
+        <result property="adviceTypeName" column="ADVICE_TYPE_NAME"/>
+        <result property="adviceStatus" column="ADVICE_STATUS"/>
+        <result property="adviceStatusName" column="ADVICE_STATUS_NAME"/>
+        <result property="adviceDesc" column="ADVICE_DESC"/>
+        <result property="senderType" column="SENDER_TYPE"/>
+        <result property="senderTypeName" column="SENDER_TYPE_NAME"/>
+        <result property="imageUrls" column="IMAGE_URLS" typeHandler="org.gzw.backend.handler.ListStringTypeHandler"/>
+        <result property="createTime" column="CREATE_TIME"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.ZwAdvice" useGeneratedKeys="true" keyProperty="adviceId" keyColumn="ADVICE_ID">
+        INSERT INTO zw_advice (RECIPIENT_ID, SENDER_ID, ADVICE_TYPE, ADVICE_STATUS, ADVICE_DESC, SENDER_TYPE, CREATE_TIME)
+        VALUES (#{recipientId}, #{senderId}, #{adviceType}, #{adviceStatus}, #{adviceDesc}, #{senderType}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.ZwAdvice">
+        UPDATE zw_advice
+        <set>
+            <if test="recipientId != null">RECIPIENT_ID = #{recipientId},</if>
+            <if test="senderId != null">SENDER_ID = #{senderId},</if>
+            <if test="adviceType != null">ADVICE_TYPE = #{adviceType},</if>
+            <if test="adviceStatus != null">ADVICE_STATUS = #{adviceStatus},</if>
+            <if test="adviceDesc != null">ADVICE_DESC = #{adviceDesc},</if>
+            <if test="senderType != null">SENDER_TYPE = #{senderType},</if>
+        </set>
+        WHERE ADVICE_ID = #{adviceId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM zw_advice WHERE ADVICE_ID = #{adviceId}
+    </delete>
+
+    <select id="selectById" resultMap="ZwAdviceVOResultMap" parameterType="java.lang.Long">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        WHERE a.ADVICE_ID = #{adviceId}
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+    </select>
+
+    <select id="selectAll" resultMap="ZwAdviceVOResultMap">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+        ORDER BY a.CREATE_TIME DESC
+    </select>
+
+    <select id="selectByRecipientId" resultMap="ZwAdviceVOResultMap" parameterType="java.lang.Long">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        WHERE a.RECIPIENT_ID = #{recipientId}
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+        ORDER BY a.CREATE_TIME DESC
+    </select>
+
+    <select id="selectBySenderId" resultMap="ZwAdviceVOResultMap" parameterType="java.lang.Long">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        WHERE a.SENDER_ID = #{senderId}
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+        ORDER BY a.CREATE_TIME DESC
+    </select>
+
+    <select id="selectByAdviceId" resultMap="ZwAdviceVOResultMap" parameterType="java.lang.Long">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        WHERE a.ADVICE_ID = #{adviceId}
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+        ORDER BY a.CREATE_TIME DESC
+    </select>
+
+    <select id="searchByConditions" parameterType="map" resultMap="ZwAdviceVOResultMap">
+        SELECT a.*, 
+               sr.NAME as SENDER_NAME, 
+               rr.NAME as RECIPIENT_NAME,
+               at.CODE_DESC as ADVICE_TYPE_NAME,
+               ast.CODE_DESC as ADVICE_STATUS_NAME,
+               st.CODE_DESC as SENDER_TYPE_NAME,
+               GROUP_CONCAT(i.IMAGE_URL ORDER BY i.CREATE_TIME) as IMAGE_URLS
+        FROM zw_advice a
+                 LEFT JOIN g_user sr ON a.SENDER_ID = sr.USER_ID
+                 LEFT JOIN g_user rr ON a.RECIPIENT_ID = rr.USER_ID
+                 LEFT JOIN g_code at ON a.ADVICE_TYPE = at.CODE_ID
+                 LEFT JOIN g_code ast ON a.ADVICE_STATUS = ast.CODE_ID
+                 LEFT JOIN g_code st ON a.SENDER_TYPE = st.CODE_ID
+                 LEFT JOIN zw_advice_image i ON a.ADVICE_ID = i.ADVICE_ID
+        <where>
+            <if test="recipientId != null">
+                AND a.RECIPIENT_ID = #{recipientId}
+            </if>
+            <if test="senderId != null">
+                AND a.SENDER_ID = #{senderId}
+            </if>
+            <if test="adviceType != null">
+                AND a.ADVICE_TYPE = #{adviceType}
+            </if>
+            <if test="adviceStatus != null">
+                AND a.ADVICE_STATUS = #{adviceStatus}
+            </if>
+        </where>
+        GROUP BY a.ADVICE_ID, sr.NAME, rr.NAME, at.CODE_DESC, ast.CODE_DESC, st.CODE_DESC
+        ORDER BY a.CREATE_TIME DESC
+    </select>
+</mapper>

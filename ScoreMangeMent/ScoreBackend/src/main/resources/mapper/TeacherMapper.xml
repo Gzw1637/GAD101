@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.TeacherMapper">
+
+    <resultMap id="TeacherResultMap" type="org.gzw.backend.entity.Teacher">
+        <id property="teacherId" column="TEACHER_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="sex" column="SEX"/>
+        <result property="teacherCode" column="TEACHER_CODE"/>
+        <result property="teachSubject" column="TEACH_SUBJECT"/>
+        <result property="teacherStatus" column="TEACHER_STATUS"/>
+        <result property="teacherType" column="TEACHER_TYPE"/>
+        <result property="phone" column="PHONE"/>
+        <result property="gra" column="GRA"/>
+        <result property="cla" column="CLA"/>
+    </resultMap>
+
+    <resultMap id="TeacherVOResultMap" type="org.gzw.backend.entity.vo.TeacherVO">
+        <id property="teacherId" column="TEACHER_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="name" column="NAME"/>
+        <result property="sex" column="SEX"/>
+        <result property="sexDesc" column="SEX_DESC"/>
+        <result property="teacherCode" column="TEACHER_CODE"/>
+        <result property="teachSubject" column="TEACH_SUBJECT"/>
+        <result property="teachSubjectDesc" column="TEACH_SUBJECT_DESC"/>
+        <result property="teacherStatus" column="TEACHER_STATUS"/>
+        <result property="teacherStatusDesc" column="TEACHER_STATUS_DESC"/>
+        <result property="teacherType" column="TEACHER_TYPE"/>
+        <result property="teacherTypeDesc" column="TEACHER_TYPE_DESC"/>
+        <result property="phone" column="PHONE"/>
+        <result property="gra" column="GRA"/>
+        <result property="cla" column="CLA"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.Teacher">
+        INSERT INTO zw_teacher (TEACHER_ID, USER_ID, SEX, TEACHER_CODE, TEACH_SUBJECT, TEACHER_STATUS, TEACHER_TYPE, PHONE, GRA, CLA)
+        VALUES (#{teacherId}, #{userId}, #{sex}, #{teacherCode}, #{teachSubject}, #{teacherStatus}, #{teacherType}, #{phone}, #{gra}, #{cla})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.Teacher">
+        UPDATE zw_teacher
+        <set>
+            <if test="userId != null">USER_ID = #{userId},</if>
+            <if test="sex != null">SEX = #{sex},</if>
+            <if test="teacherCode != null">TEACHER_CODE = #{teacherCode},</if>
+            <if test="teachSubject != null">TEACH_SUBJECT = #{teachSubject},</if>
+            <if test="teacherStatus != null">TEACHER_STATUS = #{teacherStatus},</if>
+            <if test="teacherType != null">TEACHER_TYPE = #{teacherType},</if>
+            <if test="phone != null">PHONE = #{phone},</if>
+            <if test="gra != null">GRA = #{gra},</if>
+            <if test="cla != null">CLA = #{cla},</if>
+        </set>
+        WHERE TEACHER_ID = #{teacherId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM zw_teacher WHERE TEACHER_ID = #{teacherId}
+    </delete>
+
+    <select id="selectById" resultMap="TeacherVOResultMap" parameterType="java.lang.Long">
+        SELECT t.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        LEFT JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        WHERE t.TEACHER_ID = #{teacherId}
+    </select>
+
+    <select id="selectAll" resultMap="TeacherVOResultMap">
+        SELECT t.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        LEFT JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        ORDER BY u.USER_NAME
+    </select>
+
+    <select id="searchByConditions" parameterType="map" resultMap="TeacherVOResultMap">
+        SELECT t.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+                 LEFT JOIN g_user u ON t.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+                 LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+                 LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        <where>
+            <if test="teachSubject != null">
+                AND t.TEACH_SUBJECT = #{teachSubject}
+            </if>
+            <if test="gra != null">
+                AND t.GRA = #{gra}
+            </if>
+            <if test="cla != null">
+                AND t.CLA = #{cla}
+            </if>
+            <if test="teacherType != null">
+                AND t.TEACHER_TYPE = #{teacherType}
+            </if>
+            <if test="name != null and name != ''">
+                AND u.NAME LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY u.USER_NAME
+    </select>
+
+    <insert id="insertUser" parameterType="org.gzw.backend.entity.Teacher">
+        INSERT INTO g_user (USER_ID, USER_NAME, PASSWORD, NAME, USER_STATUS, ROLE, LOGIN_FAIL_COUNT, LOCK_TIME)
+        VALUES (#{userId}, #{userName}, #{password}, #{name}, 10001001, 14981002, 0, null)
+    </insert>
+
+    <update id="updateUser" parameterType="org.gzw.backend.entity.Teacher">
+        UPDATE g_user
+        <set>
+            <if test="userName != null">USER_NAME = #{userName},</if>
+            <if test="name != null">NAME = #{name},</if>
+            <if test="password != null and password != ''">PASSWORD = #{password},</if>
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <delete id="deleteUserByUserId" parameterType="java.lang.Long">
+        DELETE FROM g_user WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 查询学科组长列表：role=14981002(老师) 且 teacherType=11021002(学科组长) -->
+    <select id="selectSubjectLeaders" resultMap="TeacherVOResultMap">
+        SELECT t.TEACHER_ID, t.USER_ID, t.TEACHER_CODE, t.TEACH_SUBJECT, 
+               t.TEACHER_STATUS, t.TEACHER_TYPE, t.PHONE, t.GRA, t.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        INNER JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        WHERE u.ROLE = 14981002 AND t.TEACHER_TYPE = 11021002
+        ORDER BY u.USER_NAME
+    </select>
+
+    <!-- 按学科查询教师 -->
+    <select id="selectBySubject" resultMap="TeacherVOResultMap" parameterType="java.lang.Integer">
+        SELECT t.TEACHER_ID, t.USER_ID, t.TEACHER_CODE, t.TEACH_SUBJECT, 
+               t.TEACHER_STATUS, t.TEACHER_TYPE, t.PHONE, t.GRA, t.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        INNER JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        WHERE t.TEACH_SUBJECT = #{subjectCode}
+        ORDER BY u.USER_NAME
+    </select>
+    
+    <!-- 根据姓名查询教师 -->
+    <select id="selectByName" resultMap="TeacherVOResultMap" parameterType="java.lang.String">
+        SELECT t.TEACHER_ID, t.USER_ID, t.TEACHER_CODE, t.TEACH_SUBJECT, 
+               t.TEACHER_STATUS, t.TEACHER_TYPE, t.PHONE, t.GRA, t.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        INNER JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        WHERE u.NAME LIKE CONCAT('%', #{name}, '%')
+        ORDER BY u.NAME
+    </select>
+    
+    <!-- 根据userId查询教师 -->
+    <select id="selectByUserId" resultMap="TeacherVOResultMap" parameterType="java.lang.Long">
+        SELECT t.TEACHER_ID, t.USER_ID, t.TEACHER_CODE, t.TEACH_SUBJECT, 
+               t.TEACHER_STATUS, t.TEACHER_TYPE, t.PHONE, t.GRA, t.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ts.CODE_DESC as TEACHER_STATUS_DESC,
+               tt.CODE_DESC as TEACHER_TYPE_DESC,
+               sub.CODE_DESC as TEACH_SUBJECT_DESC
+        FROM zw_teacher t
+        INNER JOIN g_user u ON t.USER_ID = u.USER_ID
+        LEFT JOIN g_code sex ON t.SEX = sex.CODE_ID
+        LEFT JOIN g_code ts ON t.TEACHER_STATUS = ts.CODE_ID
+        LEFT JOIN g_code tt ON t.TEACHER_TYPE = tt.CODE_ID
+        LEFT JOIN g_code sub ON t.TEACH_SUBJECT = sub.CODE_ID
+        WHERE t.USER_ID = #{userId}
+    </select>
+</mapper>

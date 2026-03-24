@@ -1,0 +1,8 @@
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  $colors: (primary: (
+      base: #4CAF50, /* 淡绿色作为主色 */
+    ),
+  )
+
+);
+@use "element-plus/theme-chalk/src/index.scss" as *;

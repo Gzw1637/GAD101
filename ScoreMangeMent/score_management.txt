@@ -1,0 +1,155 @@
+/*
+ Navicat Premium Dump SQL
+
+ Source Server         : mysql
+ Source Server Type    : MySQL
+ Source Server Version : 80015 (8.0.15)
+ Source Host           : localhost:3306
+ Source Schema         : score_management
+
+ Target Server Type    : MySQL
+ Target Server Version : 80015 (8.0.15)
+ File Encoding         : 65001
+
+ Date: 09/03/2026 17:40:38
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for g_code
+-- ----------------------------
+DROP TABLE IF EXISTS `g_code`;
+CREATE TABLE `g_code`  (
+  `CODE_ID` int(11) NOT NULL COMMENT '编码ID',
+  `TYPE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '编码类型',
+  `TYPE_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '类型名称',
+  `CODE_DESC` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `NUM` int(11) NULL DEFAULT NULL,
+  `STATUS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`CODE_ID`) USING BTREE,
+  INDEX `idx_type`(`TYPE` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of g_code
+-- ----------------------------
+INSERT INTO `g_code` VALUES (10001001, '1000', '状态', '有效', 1, '10001001');
+INSERT INTO `g_code` VALUES (10001002, '1000', '状态', '无效', 2, '10001001');
+INSERT INTO `g_code` VALUES (10011001, '1001', '学生状态', '就读', 1, '10001001');
+INSERT INTO `g_code` VALUES (10011002, '1001', '学生状态', '毕业', 2, '10001001');
+INSERT INTO `g_code` VALUES (10011003, '1001', '学生状态', '休学中', 3, '10001001');
+INSERT INTO `g_code` VALUES (10011004, '1001', '学生状态', '留级', 4, '10001001');
+INSERT INTO `g_code` VALUES (10021001, '1002', '教师状态', '在职', 1, '10001001');
+INSERT INTO `g_code` VALUES (10021002, '1002', '教师状态', '离职', 2, '10001001');
+INSERT INTO `g_code` VALUES (10021003, '1002', '教师状态', '休假', 3, '10001001');
+INSERT INTO `g_code` VALUES (10031001, '1003', '性别', '男', 1, '10001001');
+INSERT INTO `g_code` VALUES (10031002, '1003', '性别', '女', 2, '10001001');
+INSERT INTO `g_code` VALUES (10111001, '1011', '学科类型', '语文', 1, '10001001');
+INSERT INTO `g_code` VALUES (10111002, '1011', '学科类型', '数学', 2, '10001001');
+INSERT INTO `g_code` VALUES (10111003, '1011', '学科类型', '英语', 3, '10001001');
+INSERT INTO `g_code` VALUES (10111004, '1011', '学科类型', '物理', 4, '10001001');
+INSERT INTO `g_code` VALUES (10111005, '1011', '学科类型', '历史', 5, '10001001');
+INSERT INTO `g_code` VALUES (10111006, '1011', '学科类型', '化学', 6, '10001001');
+INSERT INTO `g_code` VALUES (10111007, '1011', '学科类型', '生物', 7, '10001001');
+INSERT INTO `g_code` VALUES (10111008, '1011', '学科类型', '地理', 8, '10001001');
+INSERT INTO `g_code` VALUES (10111009, '1011', '学科类型', '政治', 9, '10001001');
+INSERT INTO `g_code` VALUES (10121001, '1012', '考题难度', 'D', 1, '10001001');
+INSERT INTO `g_code` VALUES (10121002, '1012', '考题难度', 'C', 2, '10001001');
+INSERT INTO `g_code` VALUES (10121003, '1012', '考题难度', 'B', 3, '10001001');
+INSERT INTO `g_code` VALUES (10121004, '1012', '考题难度', 'A', 4, '10001001');
+INSERT INTO `g_code` VALUES (10121005, '1012', '考题难度', 'S', 5, '10001001');
+INSERT INTO `g_code` VALUES (10131001, '1013', '意见状态', '未读', 1, '10001001');
+INSERT INTO `g_code` VALUES (10131002, '1013', '意见状态', '已读', 2, '10001001');
+INSERT INTO `g_code` VALUES (10141001, '1014', '意见类型', '教学意见', 1, '10001001');
+INSERT INTO `g_code` VALUES (10141002, '1014', '意见类型', '班级意见', 2, '10001001');
+INSERT INTO `g_code` VALUES (10141003, '1014', '意见类型', '生活意见', 3, '10001001');
+INSERT INTO `g_code` VALUES (10141004, '1014', '意见类型', '其它', 4, '10001001');
+INSERT INTO `g_code` VALUES (10151001, '1015', '发件身份', '实名', 1, '10001001');
+INSERT INTO `g_code` VALUES (10151002, '1015', '发件身份', '匿名', 2, '10001001');
+INSERT INTO `g_code` VALUES (11011001, '1101', '学生类型', '普通学生', 1, '10001001');
+INSERT INTO `g_code` VALUES (11011002, '1101', '学生类型', '艺体生', 2, '10001001');
+INSERT INTO `g_code` VALUES (11011003, '1101', '学生类型', '尖子生', 3, '10001001');
+INSERT INTO `g_code` VALUES (11021001, '1102', '教师类型', '普通教师', 1, '10001001');
+INSERT INTO `g_code` VALUES (11021002, '1102', '教师类型', '学科组长', 2, '10001001');
+INSERT INTO `g_code` VALUES (11021003, '1102', '教师类型', '班主任', 3, '10001001');
+INSERT INTO `g_code` VALUES (14981001, '1498', '用户身份', '学生', 1, '10001001');
+INSERT INTO `g_code` VALUES (14981002, '1498', '用户身份', '教师', 2, '10001001');
+INSERT INTO `g_code` VALUES (14981003, '1498', '用户身份', '管理员', 3, '10001001');
+
+-- ----------------------------
+-- Table structure for g_user
+-- ----------------------------
+DROP TABLE IF EXISTS `g_user`;
+CREATE TABLE `g_user`  (
+  `USER_ID` bigint(20) NOT NULL,
+  `USER_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户名',
+  `PASSWORD` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'BCrypt加密密码',
+  `NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '姓名',
+  `USER_STATUS` int(11) NULL DEFAULT NULL COMMENT '用户状态',
+  `ROLE` int(11) NULL DEFAULT NULL COMMENT '用户身份',
+  `LOGIN_FAIL_COUNT` int(11) NULL DEFAULT 0 COMMENT '登录失败次数',
+  `LOCK_TIME` datetime NULL DEFAULT NULL COMMENT '账号锁定时间',
+  PRIMARY KEY (`USER_ID`) USING BTREE,
+  INDEX `idx_username`(`USER_NAME` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of g_user
+-- ----------------------------
+INSERT INTO `g_user` VALUES (1, 'ST2019010001', '$2a$10$53TL4dUeJw2L90zdNKBiV.uHjLQAr0JmMkDnBZou7fZ427XfzzEcG', '郭振伟', 10001001, 14981001, NULL, NULL);
+INSERT INTO `g_user` VALUES (2, 'TC1001', '$2a$10$WSAkWFMbFMWd2.bwGXNuI.5q/i0b82RRJRHOVecFKSRn0Se2HjIce', '王光志', 10001001, 14981002, NULL, NULL);
+INSERT INTO `g_user` VALUES (3, 'ST2019010002', '$2a$10$W0EsyJojOeo6fdsIKS.te.epz0MeFXiB4S3qvtugqYQJj6Z3OoNum', '蒲黄榆', 10001001, 14981001, 0, NULL);
+INSERT INTO `g_user` VALUES (4, 'ST2019010003', '$2a$10$W0EsyJojOeo6fdsIKS.te.epz0MeFXiB4S3qvtugqYQJj6Z3OoNum', '李大仁', 10001001, 14981001, 0, NULL);
+INSERT INTO `g_user` VALUES (5, 'TC1002', '$2a$10$W0EsyJojOeo6fdsIKS.te.epz0MeFXiB4S3qvtugqYQJj6Z3OoNum', '左陈坤', 10001001, 14981002, 0, NULL);
+INSERT INTO `g_user` VALUES (6, 'TC1003', '$2a$10$W0EsyJojOeo6fdsIKS.te.epz0MeFXiB4S3qvtugqYQJj6Z3OoNum', '张艺谋', 10001001, 14981002, 0, NULL);
+INSERT INTO `g_user` VALUES (7, 'GAD', '$2a$10$9KyBBFm696MbB08H6Ok9Vus.0aHpGPyCAJtjRcB4RBSPlSG4x6VFe', '郭和杜', 10001001, 14981003, 0, NULL);
+INSERT INTO `g_user` VALUES (10, 'TC1004', '$2a$10$wa2/ul.uPF0MnaPnumRNy.av/Vf1GuaE8XX..PWrVEW2md.kc0NkO', '李星云', 10001001, 14981002, NULL, NULL);
+INSERT INTO `g_user` VALUES (19, 'TC1005', '$2a$10$KXZCvWMw91U3zuNlm5rkguf3dz0rObuXqWufcDDpBkc0MWKOXNm4m', '李华', 10001001, 14981002, NULL, NULL);
+
+-- ----------------------------
+-- Table structure for zw_student
+-- ----------------------------
+DROP TABLE IF EXISTS `zw_student`;
+CREATE TABLE `zw_student`  (
+  `STUDENT_ID` bigint(20) NOT NULL,
+  `USER_ID` bigint(20) NULL DEFAULT NULL,
+  `SEX` int(11) NULL DEFAULT NULL,
+  `STUDENT_CODE` int(11) NULL DEFAULT NULL,
+  `EMAIL` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `STUDENT_STATUS` int(11) NULL DEFAULT NULL,
+  `STUDENT_TYPE` int(11) NULL DEFAULT NULL,
+  `PHONE` bigint(20) NULL DEFAULT NULL,
+  `GRA` int(11) NULL DEFAULT NULL,
+  `CLA` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`STUDENT_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of zw_student
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for zw_teacher
+-- ----------------------------
+DROP TABLE IF EXISTS `zw_teacher`;
+CREATE TABLE `zw_teacher`  (
+  `TEACHER_ID` bigint(20) NOT NULL,
+  `USER_ID` bigint(20) NULL DEFAULT NULL,
+  `SEX` int(11) NULL DEFAULT NULL,
+  `TEACHER_CODE` int(11) NULL DEFAULT NULL,
+  `TEACH_SUBJECT` int(11) NULL DEFAULT NULL,
+  `TEACHER_STATUS` int(11) NULL DEFAULT NULL,
+  `TEACHER_TYPE` int(11) NULL DEFAULT NULL,
+  `PHONE` bigint(20) NULL DEFAULT NULL,
+  `GRA` int(11) NULL DEFAULT NULL,
+  `CLA` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`TEACHER_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of zw_teacher
+-- ----------------------------
+
+SET FOREIGN_KEY_CHECKS = 1;

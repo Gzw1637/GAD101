@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.ExamMapper">
+
+    <resultMap id="ExamVOResultMap" type="org.gzw.backend.entity.vo.ExamVO">
+        <result property="examId" column="EXAM_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="examCode" column="EXAM_CODE"/>
+        <result property="examName" column="EXAM_NAME"/>
+        <result property="subjectType" column="SUBJECT_TYPE"/>
+        <result property="subjectTypeDesc" column="SUBJECT_TYPE_DESC"/>
+        <result property="examLv" column="EXAM_LV"/>
+        <result property="examLvDesc" column="EXAM_LV_DESC"/>
+        <result property="examTime" column="EXAM_TIME"/>
+        <result property="gra" column="GRA"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="name" column="NAME"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.Exam" useGeneratedKeys="true" keyProperty="examId">
+        INSERT INTO g_exam (EXAM_ID, USER_ID, EXAM_CODE, EXAM_NAME, SUBJECT_TYPE, EXAM_LV, EXAM_TIME, GRA)
+        VALUES (#{examId}, #{userId}, #{examCode}, #{examName}, #{subjectType}, #{examLv}, #{examTime}, #{gra})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.Exam">
+        UPDATE g_exam
+        <set>
+            <if test="userId != null">USER_ID = #{userId},</if>
+            <if test="examCode != null">EXAM_CODE = #{examCode},</if>
+            <if test="examName != null">EXAM_NAME = #{examName},</if>
+            <if test="subjectType != null">SUBJECT_TYPE = #{subjectType},</if>
+            <if test="examLv != null">EXAM_LV = #{examLv},</if>
+            <if test="examTime != null">EXAM_TIME = #{examTime},</if>
+            <if test="gra != null">GRA = #{gra},</if>
+        </set>
+        WHERE EXAM_ID = #{examId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM g_exam WHERE EXAM_ID = #{examId}
+    </delete>
+
+    <select id="selectById" resultMap="ExamVOResultMap" parameterType="java.lang.Long">
+        SELECT e.EXAM_ID, e.USER_ID, e.EXAM_CODE, e.EXAM_NAME, e.SUBJECT_TYPE, e.EXAM_LV, e.EXAM_TIME, e.GRA,
+               u.USER_NAME, u.NAME,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               el.CODE_DESC as EXAM_LV_DESC
+        FROM g_exam e
+                 LEFT JOIN g_user u ON e.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+                 LEFT JOIN g_code el ON e.EXAM_LV = el.CODE_ID
+        WHERE e.EXAM_ID = #{examId}
+    </select>
+
+    <select id="selectAll" resultMap="ExamVOResultMap">
+        SELECT e.EXAM_ID, e.USER_ID, e.EXAM_CODE, e.EXAM_NAME, e.SUBJECT_TYPE, e.EXAM_LV, e.EXAM_TIME, e.GRA,
+               u.USER_NAME, u.NAME,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               el.CODE_DESC as EXAM_LV_DESC
+        FROM g_exam e
+                 LEFT JOIN g_user u ON e.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+                 LEFT JOIN g_code el ON e.EXAM_LV = el.CODE_ID
+        ORDER BY e.EXAM_ID
+    </select>
+
+    <select id="selectByGrade" resultMap="ExamVOResultMap" parameterType="java.lang.Integer">
+        SELECT e.EXAM_ID, e.USER_ID, e.EXAM_CODE, e.EXAM_NAME, e.SUBJECT_TYPE, e.EXAM_LV, e.EXAM_TIME, e.GRA,
+               u.USER_NAME, u.NAME,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               el.CODE_DESC as EXAM_LV_DESC
+        FROM g_exam e
+                 LEFT JOIN g_user u ON e.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+                 LEFT JOIN g_code el ON e.EXAM_LV = el.CODE_ID
+        WHERE e.GRA = #{gra}
+        ORDER BY e.EXAM_TIME DESC
+    </select>
+</mapper>

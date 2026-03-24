@@ -1,0 +1,82 @@
+/*
+ Navicat Premium Dump SQL
+
+ Source Server         : mysql
+ Source Server Type    : MySQL
+ Source Server Version : 80015 (8.0.15)
+ Source Host           : localhost:3306
+ Source Schema         : score_management
+
+ Target Server Type    : MySQL
+ Target Server Version : 80015 (8.0.15)
+ File Encoding         : 65001
+
+ Date: 20/03/2026 11:55:01
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for g_code
+-- ----------------------------
+DROP TABLE IF EXISTS `g_code`;
+CREATE TABLE `g_code`  (
+  `CODE_ID` int(11) NOT NULL COMMENT '编码ID',
+  `TYPE` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '编码类型',
+  `TYPE_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '类型名称',
+  `CODE_DESC` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `NUM` int(11) NULL DEFAULT NULL,
+  `STATUS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`CODE_ID`) USING BTREE,
+  INDEX `idx_type`(`TYPE` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of g_code
+-- ----------------------------
+INSERT INTO `g_code` VALUES (10001001, '1000', '状态', '有效', 1, '10001001');
+INSERT INTO `g_code` VALUES (10001002, '1000', '状态', '无效', 2, '10001001');
+INSERT INTO `g_code` VALUES (10011001, '1001', '学生状态', '就读', 1, '10001001');
+INSERT INTO `g_code` VALUES (10011002, '1001', '学生状态', '毕业', 2, '10001001');
+INSERT INTO `g_code` VALUES (10011003, '1001', '学生状态', '休学中', 3, '10001001');
+INSERT INTO `g_code` VALUES (10011004, '1001', '学生状态', '留级', 4, '10001001');
+INSERT INTO `g_code` VALUES (10021001, '1002', '教师状态', '在职', 1, '10001001');
+INSERT INTO `g_code` VALUES (10021002, '1002', '教师状态', '离职', 2, '10001001');
+INSERT INTO `g_code` VALUES (10021003, '1002', '教师状态', '休假', 3, '10001001');
+INSERT INTO `g_code` VALUES (10031001, '1003', '性别', '男', 1, '10001001');
+INSERT INTO `g_code` VALUES (10031002, '1003', '性别', '女', 2, '10001001');
+INSERT INTO `g_code` VALUES (10111001, '1011', '学科类型', '语文', 1, '10001001');
+INSERT INTO `g_code` VALUES (10111002, '1011', '学科类型', '数学', 2, '10001001');
+INSERT INTO `g_code` VALUES (10111003, '1011', '学科类型', '英语', 3, '10001001');
+INSERT INTO `g_code` VALUES (10111004, '1011', '学科类型', '物理', 4, '10001001');
+INSERT INTO `g_code` VALUES (10111005, '1011', '学科类型', '历史', 5, '10001001');
+INSERT INTO `g_code` VALUES (10111006, '1011', '学科类型', '化学', 6, '10001001');
+INSERT INTO `g_code` VALUES (10111007, '1011', '学科类型', '生物', 7, '10001001');
+INSERT INTO `g_code` VALUES (10111008, '1011', '学科类型', '地理', 8, '10001001');
+INSERT INTO `g_code` VALUES (10111009, '1011', '学科类型', '政治', 9, '10001001');
+INSERT INTO `g_code` VALUES (10121001, '1012', '考题难度', 'D', 1, '10001001');
+INSERT INTO `g_code` VALUES (10121002, '1012', '考题难度', 'C', 2, '10001001');
+INSERT INTO `g_code` VALUES (10121003, '1012', '考题难度', 'B', 3, '10001001');
+INSERT INTO `g_code` VALUES (10121004, '1012', '考题难度', 'A', 4, '10001001');
+INSERT INTO `g_code` VALUES (10121005, '1012', '考题难度', 'S', 5, '10001001');
+INSERT INTO `g_code` VALUES (10131001, '1013', '意见状态', '未读', 1, '10001001');
+INSERT INTO `g_code` VALUES (10131002, '1013', '意见状态', '已读', 2, '10001001');
+INSERT INTO `g_code` VALUES (10141001, '1014', '意见类型', '教学意见', 1, '10001001');
+INSERT INTO `g_code` VALUES (10141002, '1014', '意见类型', '班级意见', 2, '10001001');
+INSERT INTO `g_code` VALUES (10141003, '1014', '意见类型', '生活意见', 3, '10001001');
+INSERT INTO `g_code` VALUES (10141004, '1014', '意见类型', '学习意见', 4, '10001001');
+INSERT INTO `g_code` VALUES (10141005, '1014', '意见类型', '其它', 5, '10001001');
+INSERT INTO `g_code` VALUES (10151001, '1015', '发件身份', '实名', 1, '10001001');
+INSERT INTO `g_code` VALUES (10151002, '1015', '发件身份', '匿名', 2, '10001001');
+INSERT INTO `g_code` VALUES (11011001, '1101', '学生类型', '普通学生', 1, '10001001');
+INSERT INTO `g_code` VALUES (11011002, '1101', '学生类型', '艺体生', 2, '10001001');
+INSERT INTO `g_code` VALUES (11011003, '1101', '学生类型', '尖子生', 3, '10001001');
+INSERT INTO `g_code` VALUES (11021001, '1102', '教师类型', '普通教师', 1, '10001001');
+INSERT INTO `g_code` VALUES (11021002, '1102', '教师类型', '学科组长', 2, '10001001');
+INSERT INTO `g_code` VALUES (11021003, '1102', '教师类型', '班主任', 3, '10001001');
+INSERT INTO `g_code` VALUES (14981001, '1498', '用户身份', '学生', 1, '10001001');
+INSERT INTO `g_code` VALUES (14981002, '1498', '用户身份', '教师', 2, '10001001');
+INSERT INTO `g_code` VALUES (14981003, '1498', '用户身份', '管理员', 3, '10001001');
+
+SET FOREIGN_KEY_CHECKS = 1;

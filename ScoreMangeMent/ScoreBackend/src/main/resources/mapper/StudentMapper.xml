@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.StudentMapper">
+
+    <resultMap id="StudentResultMap" type="org.gzw.backend.entity.Student">
+        <id property="studentId" column="STUDENT_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="sex" column="SEX"/>
+        <result property="studentCode" column="STUDENT_CODE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="studentStatus" column="STUDENT_STATUS"/>
+        <result property="studentType" column="STUDENT_TYPE"/>
+        <result property="phone" column="PHONE"/>
+        <result property="gra" column="GRA"/>
+        <result property="cla" column="CLA"/>
+    </resultMap>
+
+    <resultMap id="StudentVOResultMap" type="org.gzw.backend.entity.vo.StudentVO">
+        <id property="studentId" column="STUDENT_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <!-- 已配置name字段的映射，只需保证SQL查询出NAME列即可 -->
+        <result property="name" column="NAME"/>
+        <result property="sex" column="SEX"/>
+        <result property="sexDesc" column="SEX_DESC"/>
+        <result property="studentCode" column="STUDENT_CODE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="studentStatus" column="STUDENT_STATUS"/>
+        <result property="studentStatusDesc" column="STUDENT_STATUS_DESC"/>
+        <result property="studentType" column="STUDENT_TYPE"/>
+        <result property="studentTypeDesc" column="STUDENT_TYPE_DESC"/>
+        <result property="phone" column="PHONE"/>
+        <result property="gra" column="GRA"/>
+        <result property="cla" column="CLA"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.Student">
+        INSERT INTO zw_student (STUDENT_ID, USER_ID, SEX, STUDENT_CODE, EMAIL, STUDENT_STATUS, STUDENT_TYPE, PHONE, GRA, CLA)
+        VALUES (#{studentId}, #{userId}, #{sex}, #{studentCode}, #{email}, #{studentStatus}, #{studentType}, #{phone}, #{gra}, #{cla})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.Student">
+        UPDATE zw_student
+        <set>
+            <if test="userId != null">USER_ID = #{userId},</if>
+            <if test="sex != null">SEX = #{sex},</if>
+            <if test="studentCode != null">STUDENT_CODE = #{studentCode},</if>
+            <if test="email != null">EMAIL = #{email},</if>
+            <if test="studentStatus != null">STUDENT_STATUS = #{studentStatus},</if>
+            <if test="studentType != null">STUDENT_TYPE = #{studentType},</if>
+            <if test="phone != null">PHONE = #{phone},</if>
+            <if test="gra != null">GRA = #{gra},</if>
+            <if test="cla != null">CLA = #{cla},</if>
+        </set>
+        WHERE STUDENT_ID = #{studentId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM zw_student WHERE STUDENT_ID = #{studentId}
+    </delete>
+
+    <delete id="deleteUserByUserId" parameterType="java.lang.Long">
+        DELETE FROM g_user WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 核心修改1：selectById添加u.NAME字段查询 -->
+    <select id="selectById" resultMap="StudentVOResultMap" parameterType="java.lang.Long">
+        SELECT s.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ss.CODE_DESC as STUDENT_STATUS_DESC,
+               st.CODE_DESC as STUDENT_TYPE_DESC
+        FROM zw_student s
+                 LEFT JOIN g_user u ON s.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON s.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ss ON s.STUDENT_STATUS = ss.CODE_ID
+                 LEFT JOIN g_code st ON s.STUDENT_TYPE = st.CODE_ID
+        WHERE s.STUDENT_ID = #{studentId}
+    </select>
+
+    <!-- 核心修改 2：selectAll 添加 u.NAME 字段查询 -->
+    <select id="selectAll" resultMap="StudentVOResultMap">
+        SELECT s.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ss.CODE_DESC as STUDENT_STATUS_DESC,
+               st.CODE_DESC as STUDENT_TYPE_DESC
+        FROM zw_student s
+                 LEFT JOIN g_user u ON s.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON s.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ss ON s.STUDENT_STATUS = ss.CODE_ID
+                 LEFT JOIN g_code st ON s.STUDENT_TYPE = st.CODE_ID
+        ORDER BY u.USER_NAME
+    </select>
+
+    <select id="searchByConditions" parameterType="map" resultMap="StudentVOResultMap">
+        SELECT s.*, u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ss.CODE_DESC as STUDENT_STATUS_DESC,
+               st.CODE_DESC as STUDENT_TYPE_DESC
+        FROM zw_student s
+                 LEFT JOIN g_user u ON s.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON s.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ss ON s.STUDENT_STATUS = ss.CODE_ID
+                 LEFT JOIN g_code st ON s.STUDENT_TYPE = st.CODE_ID
+        <where>
+            <if test="gra != null">
+                AND s.GRA = #{gra}
+            </if>
+            <if test="cla != null">
+                AND s.CLA = #{cla}
+            </if>
+            <if test="studentType != null">
+                AND s.STUDENT_TYPE = #{studentType}
+            </if>
+            <if test="name != null and name != ''">
+                AND u.NAME LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY u.USER_NAME
+    </select>
+
+    <insert id="insertUser" parameterType="org.gzw.backend.entity.Student">
+        INSERT INTO g_user (USER_ID, USER_NAME, PASSWORD, NAME, USER_STATUS, ROLE, LOGIN_FAIL_COUNT, LOCK_TIME)
+        VALUES (#{userId}, #{userName}, #{password}, #{name}, 10001001, 14981001, 0, null)
+    </insert>
+
+    <update id="updateUser" parameterType="org.gzw.backend.entity.Student">
+        UPDATE g_user
+        <set>
+            <if test="userName != null">USER_NAME = #{userName},</if>
+            <if test="name != null">NAME = #{name},</if>
+            <if test="password != null and password != ''">PASSWORD = #{password},</if>
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <select id="selectStudentIdByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT STUDENT_ID FROM zw_student WHERE USER_ID = #{userId}
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+
+server:
+    port: 8080
+spring:
+    application:
+        name: EducationSystem
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/score_management?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+        username: root
+        password: 1472580369
+    jackson:
+        date-format: yyyy-MM-dd HH:mm:ss
+        time-zone: Asia/Shanghai
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 50MB
+mybatis:
+    mapper-locations: classpath:mapper/*.xml
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        map-underscore-to-camel-case: true
+        default-type-handler: org.gzw.backend.handler.ListStringTypeHandler
+    type-handlers-package: org.gzw.backend.handler
+advice:
+    upload:
+        path: C:/uploads/advice-images
+        base-url: /api/advice/images
+

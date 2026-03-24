@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.ScoreMapper">
+
+    <resultMap id="ScoreVOResultMap" type="org.gzw.backend.entity.vo.ScoreVO">
+        <id property="scoreId" column="SCORE_ID"/>
+        <result property="examId" column="EXAM_ID"/>
+        <result property="studentId" column="STUDENT_ID"/>
+        <result property="score" column="SCORE"/>
+        <result property="examName" column="EXAM_NAME"/>
+        <result property="subjectType" column="SUBJECT_TYPE"/>
+        <result property="subjectTypeDesc" column="SUBJECT_TYPE_DESC"/>
+        <result property="examTime" column="EXAM_TIME"/>
+        <result property="remark" column="REMARK"/>
+        <result property="studentCode" column="STUDENT_CODE"/>
+        <result property="gra" column="GRA"/>
+        <result property="cla" column="CLA"/>
+        <result property="classRank" column="CLASS_RANK"/>
+        <result property="gradeRank" column="GRADE_RANK"/>
+        <result property="name" column="NAME"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.Score" useGeneratedKeys="true" keyProperty="scoreId">
+        INSERT INTO zw_score (EXAM_ID, STUDENT_ID, SCORE)
+        VALUES (#{examId}, #{studentId}, #{score})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.Score">
+        UPDATE zw_score
+        <set>
+            <if test="examId != null">EXAM_ID = #{examId},</if>
+            <if test="studentId != null">STUDENT_ID = #{studentId},</if>
+            <if test="score != null">SCORE = #{score},</if>
+        </set>
+        WHERE SCORE_ID = #{scoreId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM zw_score WHERE SCORE_ID = #{scoreId}
+    </delete>
+
+    <select id="selectById" resultMap="ScoreVOResultMap" parameterType="java.lang.Long">
+        SELECT s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+               e.EXAM_NAME, e.SUBJECT_TYPE,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               st.STUDENT_CODE, st.GRA, st.CLA,
+               u.NAME
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        WHERE s.SCORE_ID = #{scoreId}
+    </select>
+
+    <select id="selectAll" resultMap="ScoreVOResultMap">
+        SELECT 
+            s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+            e.EXAM_NAME, e.SUBJECT_TYPE,
+            sub.CODE_DESC as SUBJECT_TYPE_DESC,
+            e.EXAM_TIME,
+            st.STUDENT_CODE, st.GRA, st.CLA,
+            u.NAME,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.CLA = st.CLA
+             AND s2.SCORE > s.SCORE) as CLASS_RANK,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.GRA = st.GRA
+             AND s2.SCORE > s.SCORE) as GRADE_RANK
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        ORDER BY e.EXAM_TIME DESC, s.SCORE_ID
+    </select>
+
+    <select id="selectByExamId" resultMap="ScoreVOResultMap" parameterType="java.lang.Long">
+        SELECT 
+            s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+            e.EXAM_NAME, e.SUBJECT_TYPE,
+            sub.CODE_DESC as SUBJECT_TYPE_DESC,
+            e.EXAM_TIME,
+            st.STUDENT_CODE, st.GRA, st.CLA,
+            u.NAME,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.CLA = st.CLA
+             AND s2.SCORE > s.SCORE) as CLASS_RANK,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.GRA = st.GRA
+             AND s2.SCORE > s.SCORE) as GRADE_RANK
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        WHERE s.EXAM_ID = #{examId}
+        ORDER BY e.EXAM_TIME DESC, s.SCORE_ID
+    </select>
+
+    <select id="selectByStudentId" resultMap="ScoreVOResultMap" parameterType="java.lang.Long">
+        SELECT 
+            s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+            e.EXAM_NAME, e.SUBJECT_TYPE,
+            sub.CODE_DESC as SUBJECT_TYPE_DESC,
+            e.EXAM_TIME,
+            st.STUDENT_CODE, st.GRA, st.CLA,
+            u.NAME,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.CLA = st.CLA
+             AND s2.SCORE > s.SCORE) as CLASS_RANK,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.GRA = st.GRA
+             AND s2.SCORE > s.SCORE) as GRADE_RANK
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        WHERE s.STUDENT_ID = #{studentId}
+        ORDER BY e.EXAM_TIME DESC
+    </select>
+
+    <select id="selectByStudentIdAndFilters" resultMap="ScoreVOResultMap">
+        SELECT 
+            s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+            e.EXAM_NAME, e.SUBJECT_TYPE,
+            sub.CODE_DESC as SUBJECT_TYPE_DESC,
+            e.EXAM_TIME,
+            st.STUDENT_CODE, st.GRA, st.CLA,
+            u.NAME,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.CLA = st.CLA
+             AND s2.SCORE > s.SCORE) as CLASS_RANK,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.GRA = st.GRA
+             AND s2.SCORE > s.SCORE) as GRADE_RANK
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        WHERE s.STUDENT_ID = #{param1}
+        <if test="param2 != null">
+            AND s.EXAM_ID = #{param2}
+        </if>
+        <if test="param3 != null">
+            AND e.SUBJECT_TYPE = #{param3}
+        </if>
+        <if test="param4 != null and param4 != ''">
+            AND e.EXAM_NAME LIKE CONCAT('%', #{param4}, '%')
+        </if>
+        ORDER BY e.EXAM_TIME DESC
+    </select>
+
+    <select id="selectByFilters" resultMap="ScoreVOResultMap">
+        SELECT 
+            s.SCORE_ID, s.EXAM_ID, s.STUDENT_ID, s.SCORE,
+            e.EXAM_NAME, e.SUBJECT_TYPE,
+            sub.CODE_DESC as SUBJECT_TYPE_DESC,
+            e.EXAM_TIME,
+            st.STUDENT_CODE, st.GRA, st.CLA,
+            u.NAME,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.CLA = st.CLA
+             AND s2.SCORE > s.SCORE) as CLASS_RANK,
+            (SELECT COUNT(*) + 1 FROM zw_score s2 
+             LEFT JOIN g_exam e2 ON s2.EXAM_ID = e2.EXAM_ID
+             LEFT JOIN zw_student st2 ON s2.STUDENT_ID = st2.STUDENT_ID
+             WHERE s2.EXAM_ID = s.EXAM_ID 
+             AND e2.SUBJECT_TYPE = e.SUBJECT_TYPE
+             AND st2.GRA = st.GRA
+             AND s2.SCORE > s.SCORE) as GRADE_RANK
+        FROM zw_score s
+        LEFT JOIN g_exam e ON s.EXAM_ID = e.EXAM_ID
+        LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+        LEFT JOIN zw_student st ON s.STUDENT_ID = st.STUDENT_ID
+        LEFT JOIN g_user u ON st.USER_ID = u.USER_ID
+        <where>
+            <if test="param1 != null">
+                AND e.SUBJECT_TYPE = #{param1}
+            </if>
+            <if test="param2 != null and param2 != ''">
+                AND e.EXAM_NAME LIKE CONCAT('%', #{param2}, '%')
+            </if>
+        </where>
+        ORDER BY e.EXAM_TIME DESC, s.SCORE_ID
+    </select>
+</mapper>

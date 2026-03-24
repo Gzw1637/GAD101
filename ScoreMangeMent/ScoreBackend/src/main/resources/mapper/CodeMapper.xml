@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.CodeMapper">
+
+    <resultMap id="CodeResultMap" type="org.gzw.backend.entity.Code">
+        <id property="codeId" column="CODE_ID"/>
+        <result property="type" column="TYPE"/>
+        <result property="typeName" column="TYPE_NAME"/>
+        <result property="codeDesc" column="CODE_DESC"/>
+        <result property="num" column="NUM"/>
+        <result property="status" column="STATUS"/>
+    </resultMap>
+
+    <select id="selectByType" resultMap="CodeResultMap" parameterType="java.lang.String">
+        SELECT * FROM g_code
+        WHERE TYPE = #{type}
+        ORDER BY NUM
+    </select>
+
+    <select id="selectByCodeId" resultMap="CodeResultMap" parameterType="java.lang.Integer">
+        SELECT * FROM g_code
+        WHERE CODE_ID = #{codeId}
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.ZwAdviceImageMapper">
+
+    <resultMap id="ZwAdviceImageResultMap" type="org.gzw.backend.entity.ZwAdviceImage">
+        <id property="imageId" column="IMAGE_ID"/>
+        <result property="adviceId" column="ADVICE_ID"/>
+        <result property="imageUrl" column="IMAGE_URL"/>
+        <result property="createTime" column="CREATE_TIME"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.ZwAdviceImage" useGeneratedKeys="true" keyProperty="imageId" keyColumn="IMAGE_ID">
+        INSERT INTO zw_advice_image (ADVICE_ID, IMAGE_URL, CREATE_TIME)
+        VALUES (#{adviceId}, #{imageUrl}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="org.gzw.backend.entity.ZwAdviceImage">
+        UPDATE zw_advice_image
+        <set>
+            <if test="adviceId != null">ADVICE_ID = #{adviceId},</if>
+            <if test="imageUrl != null">IMAGE_URL = #{imageUrl},</if>
+        </set>
+        WHERE IMAGE_ID = #{imageId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM zw_advice_image WHERE IMAGE_ID = #{imageId}
+    </delete>
+
+    <delete id="deleteByAdviceId" parameterType="java.lang.Long">
+        DELETE FROM zw_advice_image WHERE ADVICE_ID = #{adviceId}
+    </delete>
+
+    <select id="selectById" resultMap="ZwAdviceImageResultMap" parameterType="java.lang.Long">
+        SELECT * FROM zw_advice_image WHERE IMAGE_ID = #{imageId}
+    </select>
+
+    <select id="selectByAdviceId" resultMap="ZwAdviceImageResultMap" parameterType="java.lang.Long">
+        SELECT * FROM zw_advice_image WHERE ADVICE_ID = #{adviceId} ORDER BY CREATE_TIME DESC
+    </select>
+</mapper>

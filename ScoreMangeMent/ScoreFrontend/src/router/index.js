@@ -18,6 +18,8 @@ const AdminAdvice = () => import('@/views/AdminAdvice.vue')
 const Teacher = () => import('@/views/Teacher.vue')
 const TeacherCourse = () => import('@/views/TeacherCourse.vue')
 const TeacherScore = () => import('@/views/TeacherScore.vue')
+const TeacherAdviceSent = () => import('@/views/TeacherAdviceSent.vue')
+const TeacherAdviceReceived = () => import('@/views/TeacherAdviceReceived.vue')
 const Student = () => import('@/views/Student.vue')
 const StudentScore = () => import('@/views/StudentScore.vue')
 const StudentAdviceSent = () => import('@/views/StudentAdviceSent.vue')
@@ -33,7 +35,9 @@ const routes = [
     ]},
     {path: '/teacher', name: 'Teacher', component: Teacher, meta: { requiresAuth: true, role: 14981002 }, children: [
         {path: '', name: 'TeacherCourse', component: TeacherCourse},
-        {path: 'score', name: 'TeacherScore', component: TeacherScore}
+        {path: 'score', name: 'TeacherScore', component: TeacherScore},
+        {path: 'advice/sent', name: 'TeacherAdviceSent', component: TeacherAdviceSent},
+        {path: 'advice/received', name: 'TeacherAdviceReceived', component: TeacherAdviceReceived}
     ]},
     {path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true, role: 14981003 }, children: [
         {path: '', name: 'AdminDashboard', component: AdminDashboard},

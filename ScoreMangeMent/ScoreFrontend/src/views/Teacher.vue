@@ -25,6 +25,18 @@
         </template>
         <span>教学计划</span>
       </el-menu-item>
+      <el-menu-item index="advice-received">
+        <template #icon>
+          <el-icon><Message /></el-icon>
+        </template>
+        <span>收件箱</span>
+      </el-menu-item>
+      <el-menu-item index="advice-sent">
+        <template #icon>
+          <el-icon><Promotion /></el-icon>
+        </template>
+        <span>发件箱</span>
+      </el-menu-item>
       <el-menu-item index="personal-info">
         <template #icon>
           <el-icon><UserFilled /></el-icon>
@@ -49,7 +61,7 @@
 import { useRouter } from 'vue-router'
 import { RouterView } from 'vue-router'
 import Layout from '@/components/Layout.vue'
-import { Document, DataAnalysis, School, Notebook, UserFilled, Lock } from '@element-plus/icons-vue'
+import { Document, DataAnalysis, School, Notebook, UserFilled, Lock, Message, Promotion } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -68,6 +80,12 @@ const handleMenuSelect = (key, keyPath) => {
       break
     case 'teaching-plan':
       // 教学计划路由
+      break
+    case 'advice-received':
+      router.push('/teacher/advice/received')
+      break
+    case 'advice-sent':
+      router.push('/teacher/advice/sent')
       break
     case 'personal-info':
       // 个人信息路由

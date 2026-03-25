@@ -1,54 +1,91 @@
 <template>
   <el-container class="layout-container">
     <!-- 侧边栏 -->
-    <el-aside :width="isCollapse ? '80px' : '180px'"  class="layout-aside" :class="{ 'collapsed': isCollapse }" >
+    <el-aside :width="isCollapse ? '80px' : '220px'" class="layout-aside" :class="{ 'collapsed': isCollapse }">
+      <!-- Logo区域 -->
       <div class="sidebar-header">
+        <div class="logo-box">
+          <img src="@/assets/re-data.png" alt="logo" class="logo-img">
+          <span v-if="!isCollapse" class="logo-text">教育管理</span>
+        </div>
         <el-button
-            type="text"
-            class="collapse-btn"
-            @click="isCollapse = !isCollapse"
+          type="text"
+          class="collapse-btn"
+          @click="isCollapse = !isCollapse"
         >
-          <el-icon v-if="isCollapse"><ArrowRight /></el-icon>
-          <el-icon v-else><ArrowLeft /></el-icon>
+          <el-icon v-if="isCollapse"><DArrowRight /></el-icon>
+          <el-icon v-else><DArrowLeft /></el-icon>
         </el-button>
       </div>
+      
       <el-menu
-          :default-active="activeMenu"
-          class="layout-menu"
-          :collapse="isCollapse"
-          @select="handleMenuSelect"
-          router
+        :default-active="activeMenu"
+        class="layout-menu"
+        :collapse="isCollapse"
+        :collapse-transition="false"
+        @select="handleMenuSelect"
+        router
+        background-color="transparent"
+        text-color="#a8abb2"
+        active-text-color="#409eff"
       >
         <slot name="sidebar"></slot>
-<!--        <el-menu-item index="logout">-->
-<!--          <template #icon>-->
-<!--            <el-icon><SwitchButton /></el-icon>-->
-<!--          </template>-->
-<!--          <span v-if="!isCollapse">退出</span>-->
-<!--        </el-menu-item>-->
       </el-menu>
     </el-aside>
 
     <!-- 主内容区 -->
     <el-container>
-      <!-- 页眉 -->
+      <!-- 顶部导航 -->
       <el-header class="layout-header">
         <div class="header-left">
-          <img src="@/assets/re-data.png" alt="" style="width: 40px;height: 40px;margin-right: 10px">
-          <span class="logo-text">教育管理系统</span>
+          <breadcrumb class="header-breadcrumb" />
         </div>
+        
         <div class="header-right">
-          <div class="user-info">
-            <el-avatar :size="32" :src="userAvatar"></el-avatar>
-            <span class="user-name">{{ userName }}</span>
+          <!-- 欢迎语 -->
+          <div class="welcome-text">
+            <el-icon><User /></el-icon>
+            <span>欢迎，{{ userName }}</span>
           </div>
-          <el-button type="text" style="color: #f0f2f5" @click="handleLogout">退出登录</el-button>
+          
+          <el-divider direction="vertical" />
+          
+          <!-- 头像+退出 -->
+          <div class="user-actions">
+            <el-dropdown @command="handleCommand">
+              <div class="user-avatar-box">
+                <el-avatar :size="36" :src="userAvatar" class="user-avatar" />
+                <span class="user-name">{{ userName }}</span>
+                <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+              </div>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="profile">
+                    <el-icon><User /></el-icon>
+                    个人中心
+                  </el-dropdown-item>
+                  <el-dropdown-item command="password">
+                    <el-icon><Lock /></el-icon>
+                    修改密码
+                  </el-dropdown-item>
+                  <el-dropdown-item divided command="logout">
+                    <el-icon><SwitchButton /></el-icon>
+                    退出登录
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
         </div>
       </el-header>
 
       <!-- 内容区 -->
       <el-main class="layout-main">
-        <slot></slot>
+        <router-view v-slot="{ Component }">
+          <transition name="fade-transform" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -57,7 +94,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ArrowRight, SwitchButton } from '@element-plus/icons-vue'
+import { DArrowLeft, DArrowRight, User, Lock, SwitchButton, ArrowDown } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -74,7 +111,7 @@ const isCollapse = ref(false)
 const userInfo = ref(JSON.parse(localStorage.getItem('userInfo') || '{}'))
 
 const userName = computed(() => userInfo.value.name || '用户')
-const userAvatar = computed(() => 'https://img.icons8.com/color/48/000000/user.png')
+const userAvatar = computed(() => 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
 
 const handleMenuSelect = (key, keyPath) => {
   if (key === 'logout') {
@@ -84,14 +121,37 @@ const handleMenuSelect = (key, keyPath) => {
   }
 }
 
-const handleLogout = () => {
-  localStorage.removeItem('userInfo')
-  router.push('/login')
-  ElMessage.success('退出登录成功')
+const handleCommand = (command) => {
+  switch (command) {
+    case 'profile':
+      ElMessage.info('个人中心功能开发中...')
+      break
+    case 'password':
+      ElMessage.info('修改密码功能开发中...')
+      break
+    case 'logout':
+      handleLogout()
+      break
+  }
 }
 
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    localStorage.removeItem('userInfo')
+    localStorage.removeItem('token')
+    localStorage.removeItem('rememberMe')
+    router.push('/login')
+    ElMessage.success('退出登录成功')
+  }).catch(() => {})
+}
+
+import { ElMessageBox } from 'element-plus'
+
 onMounted(() => {
-  // 检查用户是否登录
   if (!userInfo.value.userName) {
     router.push('/login')
   }
@@ -104,38 +164,104 @@ onMounted(() => {
   overflow: hidden;
 }
 
+/* 侧边栏 */
 .layout-aside {
-  background-color: #f0f2f5;
-  border-right: 1px solid #e4e7ed;
-  transition: width 0.3s ease;
+  background: linear-gradient(180deg, #1d1e23 0%, #232428 100%);
+  border-right: 1px solid #2d2f33;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
   display: flex;
-  justify-content: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #e4e7ed;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 12px;
+  border-bottom: 1px solid #2d2f33;
+  height: 60px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.logo-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: 1px;
 }
 
 .collapse-btn {
-  color: #333;
-  font-size: 16px;
-  padding: 8px;
+  color: #909399;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s;
 }
 
+.collapse-btn:hover {
+  color: #409eff;
+  background: rgba(64, 158, 255, 0.1);
+}
+
+/* 菜单 */
 .layout-menu {
-  margin-top: 10px;
+  border-right: none;
+  flex: 1;
+  padding: 8px 0;
 }
 
+.layout-menu :deep(.el-menu-item) {
+  margin: 4px 8px;
+  border-radius: 8px;
+  height: 44px;
+  line-height: 44px;
+  transition: all 0.3s;
+}
+
+.layout-menu :deep(.el-menu-item:hover) {
+  background: rgba(64, 158, 255, 0.1) !important;
+}
+
+.layout-menu :deep(.el-menu-item.is-active) {
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.2) 0%, rgba(103, 58, 183, 0.1) 100%) !important;
+  color: #409eff !important;
+}
+
+.layout-menu :deep(.el-menu-item.is-active::before) {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #409eff;
+  border-radius: 0 3px 3px 0;
+}
+
+/* 顶部导航 */
 .layout-header {
-  background-color: #409eff;
-  color: white;
+  background: linear-gradient(90deg, #fff 0%, #f8f9fa 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   height: 60px;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .header-left {
@@ -143,11 +269,8 @@ onMounted(() => {
   align-items: center;
 }
 
-.logo-text {
-  margin-left: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
+.header-breadcrumb {
+  font-size: 14px;
 }
 
 .header-right {
@@ -155,31 +278,91 @@ onMounted(() => {
   align-items: center;
 }
 
-.user-info {
+.welcome-text {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  gap: 6px;
+  color: #606266;
+  font-size: 14px;
+}
+
+.el-divider--vertical {
+  height: 24px;
+  margin: 0 16px;
+  border-color: #e4e7ed;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.user-avatar-box:hover {
+  background: rgba(64, 158, 255, 0.1);
+}
+
+.user-avatar {
+  border: 2px solid #e4e7ed;
+  transition: border-color 0.3s;
+}
+
+.user-avatar-box:hover .user-avatar {
+  border-color: #409eff;
 }
 
 .user-name {
-  margin-left: 10px;
+  color: #303133;
   font-size: 14px;
-  color: white;
+  font-weight: 500;
 }
 
+/* 内容区 */
 .layout-main {
-  background-color: #f0f2f5;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
   padding: 20px;
   overflow-y: auto;
+  min-height: calc(100vh - 60px);
 }
 
-/* 响应式设计 */
+/* 过渡动画 */
+.fade-transform-enter-active,
+.fade-transform-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-transform-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 响应式 */
 @media (max-width: 768px) {
   .layout-aside {
-    width: 64px !important;
+    position: fixed;
+    z-index: 100;
+    height: 100%;
   }
-
+  
   .logo-text {
+    display: none;
+  }
+  
+  .welcome-text span {
     display: none;
   }
 }

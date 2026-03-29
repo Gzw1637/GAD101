@@ -28,3 +28,31 @@ advice:
         path: C:/uploads/advice-images
         base-url: /api/advice/images
 
+# AI 服务配置
+ai:
+    # DeepSeek AI 配置（用于文本分析）
+    deepseek:
+        api-key: 改成实际的api-key
+        base-url: https://api.deepseek.com
+        model: deepseek-chat
+    # 阿里云 OCR 配置（用于整页试卷识别）
+    aliyun-ocr:
+        # 阿里云 OCR Access Key ID
+        access-key-id: 改成实际的id
+        # 阿里云 OCR Access Key Secret
+        access-key-secret: 改成实际的secret
+        # 阿里云整页试卷识别接口
+        edu-paper-url: https://ocr-api.aliyuncs.com/ocr/v1/RecognizeEduPaperOcr
+    # 百度 OCR 配置（备用）
+    baidu-ocr:
+        api-key: 改成实际的api-key
+        secret-key: 改成实际的secret-key
+        # 百度 OCR 通用文字识别接口（备用）
+        general-url: https://aip.baidubce.com/rest/2.0/ocr/v1
+
+# 文件上传配置
+aliyun:
+    upload:
+        exam-papers-path: C:/uploads/exam-papers
+        exam-papers-base-url: /api/exam/papers
+

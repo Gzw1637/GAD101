@@ -117,14 +117,17 @@
             <artifactId>easyexcel</artifactId>
             <version>3.3.2</version>
         </dependency>
-        <!-- 5. 跨域+Web增强（Spring Boot 3.x 内置，无需额外配置） -->
-        <!-- 6. 日期处理（hutool已包含，无需重复添加） -->
+        <!-- 5. 跨域+Web 增强（Spring Boot 3.x 内置，无需额外配置） -->
+        <!-- 6. 日期处理（hutool 已包含，无需重复添加） -->
         <!-- 7. 提供 javax.annotation.Resource 注解支持 -->
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
             <version>2.1.1</version>
         </dependency>
+        
+        <!-- HTTP 客户端依赖（用于调用 AI 和 OCR API） -->
+        <!-- Spring Boot 已内置 RestTemplate，无需额外添加 -->
     </dependencies>
 
     <build>

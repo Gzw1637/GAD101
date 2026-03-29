@@ -655,26 +655,27 @@ const handleImportSubmit = async () => {
 // 导出数据
 const handleExport = async () => {
   try {
-    const response = await request.get('/api/score/list')
-    if (response.code === 200 && response.data) {
-      const scoresToExport = response.data
-      
-      const exportResponse = await request.post('/api/score/export', scoresToExport, {
-        responseType: 'blob'
-      })
-      
-      const blob = new Blob([exportResponse], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      })
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = '成绩数据.xlsx'
-      link.click()
-      window.URL.revokeObjectURL(url)
-      
-      ElMessage.success('导出成功')
-    }
+    // 构建查询参数
+    const params = {}
+    if (filterExamName.value) params.examName = filterExamName.value
+    if (filterSubjectType.value) params.subjectType = filterSubjectType.value
+    
+    const response = await request.post('/api/score/export', null, {
+      params,
+      responseType: 'blob'
+    })
+    
+    const blob = new Blob([response], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '成绩数据.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+    
+    ElMessage.success('导出成功')
   } catch (error) {
     console.error('导出数据失败:', error)
     ElMessage.error('导出数据失败')

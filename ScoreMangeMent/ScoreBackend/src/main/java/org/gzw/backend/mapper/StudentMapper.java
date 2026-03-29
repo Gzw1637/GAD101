@@ -29,4 +29,14 @@ public interface StudentMapper {
     int deleteUserByUserId(Long userId);
     
     Long selectStudentIdByUserId(Long userId);
+    
+    /**
+     * 根据学号查询学生
+     */
+    StudentVO searchByStudentCode(String studentCode);
+    
+    /**
+     * 根据用户 ID 查询学生
+     */
+    StudentVO selectByUserId(Long userId);
 }

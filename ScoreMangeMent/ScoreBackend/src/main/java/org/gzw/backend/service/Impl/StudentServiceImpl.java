@@ -195,4 +195,14 @@ public class StudentServiceImpl implements StudentService {
         }
         return successCount;
     }
+    
+    @Override
+    public StudentVO searchByStudentCode(String studentCode) {
+        return studentMapper.searchByStudentCode(studentCode);
+    }
+    
+    @Override
+    public StudentVO getStudentByUserId(Long userId) {
+        return studentMapper.selectByUserId(userId);
+    }
 }

@@ -23,4 +23,13 @@ public interface UserService {
     List<UserVO> searchUsersByConditions(Long role, Integer userStatus, String name);
     
     int unlockUser(Long userId);
+    
+    /**
+     * 修改用户密码
+     * @param userName 用户名
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 影响的行数
+     */
+    int changePassword(String userName, String oldPassword, String newPassword);
 }

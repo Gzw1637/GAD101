@@ -16,24 +16,41 @@ const AdminSubject = () => import('@/views/AdminSubject.vue')
 const AdminSubjectDetail = () => import('@/views/AdminSubjectDetail.vue')
 const AdminAdvice = () => import('@/views/AdminAdvice.vue')
 const Teacher = () => import('@/views/Teacher.vue')
+const TeacherHome = () => import('@/views/TeacherHome.vue')
 const TeacherCourse = () => import('@/views/TeacherCourse.vue')
 const TeacherScore = () => import('@/views/TeacherScore.vue')
+const TeacherPersonal = () => import('@/views/TeacherPersonal.vue')
+const TeacherAnalysis = () => import('@/views/TeacherAnalysis.vue')
+const ExamListView = () => import('@/views/ExamListView.vue')
+const PaperUpload = () => import('@/views/PaperUpload.vue')
 const Student = () => import('@/views/Student.vue')
 const StudentScore = () => import('@/views/StudentScore.vue')
 const StudentAdviceSent = () => import('@/views/StudentAdviceSent.vue')
 const StudentAdviceReceived = () => import('@/views/StudentAdviceReceived.vue')
+const StudentPersonal = () => import('@/views/StudentPersonal.vue')
+const AdminPersonal = () => import('@/views/AdminPersonal.vue')
+const ChangePassword = () => import('@/views/ChangePassword.vue')
 
 const routes = [
     {path: '/', name: 'Home', component: Home},
     {path: '/login', name: 'Login', component: Login},
     {path: '/student', name: 'Student', component: Student, meta: { requiresAuth: true, role: 14981001 }, children: [
+        {path: '', name: 'StudentHome', component: () => import('@/views/Student.vue')},
         {path: 'score', name: 'StudentScore', component: StudentScore},
         {path: 'advice/sent', name: 'StudentAdviceSent', component: StudentAdviceSent},
-        {path: 'advice/received', name: 'StudentAdviceReceived', component: StudentAdviceReceived}
+        {path: 'advice/received', name: 'StudentAdviceReceived', component: StudentAdviceReceived},
+        {path: 'personal', name: 'StudentPersonal', component: StudentPersonal},
+        {path: 'change-password', name: 'StudentChangePassword', component: ChangePassword}
     ]},
     {path: '/teacher', name: 'Teacher', component: Teacher, meta: { requiresAuth: true, role: 14981002 }, children: [
-        {path: '', name: 'TeacherCourse', component: TeacherCourse},
-        {path: 'score', name: 'TeacherScore', component: TeacherScore}
+        {path: '', name: 'TeacherHome', component: TeacherHome},
+        {path: 'course', name: 'TeacherCourse', component: TeacherCourse},
+        {path: 'score', name: 'TeacherScore', component: TeacherScore},
+        {path: 'exam-list', name: 'ExamListView', component: ExamListView},
+        {path: 'analysis', name: 'TeacherAnalysis', component: TeacherAnalysis},
+        {path: 'paper-upload', name: 'PaperUpload', component: PaperUpload},
+        {path: 'personal', name: 'TeacherPersonal', component: TeacherPersonal},
+        {path: 'change-password', name: 'TeacherChangePassword', component: ChangePassword}
     ]},
     {path: '/admin', name: 'Admin', component: Admin, meta: { requiresAuth: true, role: 14981003 }, children: [
         {path: '', name: 'AdminDashboard', component: AdminDashboard},
@@ -44,7 +61,9 @@ const routes = [
         {path: 'score', name: 'AdminScore', component: AdminScore},
         {path: 'subject', name: 'AdminSubject', component: AdminSubject},
         {path: 'subject/:subjectCode/:subjectName', name: 'AdminSubjectDetail', component: AdminSubjectDetail},
-        {path: 'advice', name: 'AdminAdvice', component: AdminAdvice}
+        {path: 'advice', name: 'AdminAdvice', component: AdminAdvice},
+        {path: 'personal', name: 'AdminPersonal', component: AdminPersonal},
+        {path: 'change-password', name: 'AdminChangePassword', component: ChangePassword}
     ]}
 ]
 

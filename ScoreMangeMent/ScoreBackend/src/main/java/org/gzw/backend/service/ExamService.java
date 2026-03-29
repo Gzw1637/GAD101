@@ -20,4 +20,10 @@ public interface ExamService {
     List<ExamVO> getExamsByGrade(Integer gra);
     
     int importExams(List<ExamImportVO> exams);
+    
+    List<ExamVO> searchByExamNameAndSubject(String examName, Integer subjectType);
+
+    List<ExamVO> selectAll();
+
+    List<ExamVO> selectByUserGradeAndSubjects(Integer grade, List<Integer> subjects);
 }

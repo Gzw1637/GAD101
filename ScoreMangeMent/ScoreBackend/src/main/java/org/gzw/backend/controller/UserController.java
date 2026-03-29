@@ -6,6 +6,8 @@ import org.gzw.backend.entity.vo.UserVO;
 import org.gzw.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import java.util.List;
 
@@ -87,5 +89,39 @@ public class UserController {
             return Result.success(result);
         }
         return Result.error(500, "解封用户失败");
+    }
+
+    @PostMapping("/change-password")
+    public Result<Integer> changePassword(HttpServletRequest request, @RequestBody Map<String, String> passwordMap) {
+        try {
+            // 从请求属性中获取当前用户的 ID
+            Long userId = (Long) request.getAttribute("userId");
+            
+            // 根据用户 ID 获取用户信息，以获取用户名
+            UserVO userVO = userService.getUserById(userId);
+            if (userVO == null) {
+                return Result.error(404, "用户不存在");
+            }
+            
+            // 从请求体中获取旧密码和新密码
+            String oldPassword = passwordMap.get("oldPassword");
+            String newPassword = passwordMap.get("newPassword");
+            
+            // 验证参数
+            if (oldPassword == null || oldPassword.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+                return Result.error(400, "旧密码和新密码不能为空");
+            }
+            
+            // 调用修改密码的方法
+            int result = userService.changePassword(userVO.getUserName(), oldPassword, newPassword);
+            if (result > 0) {
+                return Result.success(result);
+            }
+            return Result.error(500, "密码修改失败");
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        } catch (Exception e) {
+            return Result.error(500, "系统异常，请稍后重试");
+        }
     }
 }

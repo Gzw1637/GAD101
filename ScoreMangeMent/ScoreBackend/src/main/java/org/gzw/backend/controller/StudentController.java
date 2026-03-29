@@ -84,6 +84,40 @@ public class StudentController {
         List<StudentVO> students = studentService.searchStudentsByConditions(gra, cla, studentType, name);
         return Result.success(students);
     }
+    
+    /**
+     * 根据学号查询学生
+     */
+    @GetMapping("/search-by-student-code")
+    public Result<StudentVO> searchStudentByStudentCode(@RequestParam("studentCode") String studentCode) {
+        try {
+            StudentVO student = studentService.searchByStudentCode(studentCode);
+            if (student != null) {
+                return Result.success(student);
+            } else {
+                return Result.error(404, "未找到该学生");
+            }
+        } catch (Exception e) {
+            return Result.error(500, "查询学生失败：" + e.getMessage());
+        }
+    }
+    
+    /**
+     * 根据用户 ID 查询学生
+     */
+    @GetMapping("/user/{userId}")
+    public Result<StudentVO> getStudentByUserId(@PathVariable Long userId) {
+        try {
+            StudentVO student = studentService.getStudentByUserId(userId);
+            if (student != null) {
+                return Result.success(student);
+            } else {
+                return Result.error(404, "未找到该学生");
+            }
+        } catch (Exception e) {
+            return Result.error(500, "查询学生失败：" + e.getMessage());
+        }
+    }
 
     @PostMapping("/export")
     public void exportStudents(

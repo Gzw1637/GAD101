@@ -76,4 +76,37 @@
         WHERE e.GRA = #{gra}
         ORDER BY e.EXAM_TIME DESC
     </select>
+
+    <!-- 根据用户年级和科目查询考试 -->
+    <select id="selectByUserGradeAndSubjects" resultMap="ExamVOResultMap" parameterType="map">
+        SELECT e.EXAM_ID, e.USER_ID, e.EXAM_CODE, e.EXAM_NAME, e.SUBJECT_TYPE, e.EXAM_LV, e.EXAM_TIME, e.GRA,
+               u.USER_NAME, u.NAME,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               el.CODE_DESC as EXAM_LV_DESC
+        FROM g_exam e
+                 LEFT JOIN g_user u ON e.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+                 LEFT JOIN g_code el ON e.EXAM_LV = el.CODE_ID
+        WHERE e.GRA = #{grade}
+          AND e.SUBJECT_TYPE IN
+          <foreach item="subject" collection="subjects" open="(" separator="," close=")">
+              #{subject}
+          </foreach>
+        ORDER BY e.EXAM_TIME DESC
+    </select>
+    
+    <!-- 根据考试名称和科目查询考试 -->
+    <select id="searchByExamNameAndSubject" resultMap="ExamVOResultMap">
+        SELECT e.EXAM_ID, e.USER_ID, e.EXAM_CODE, e.EXAM_NAME, e.SUBJECT_TYPE, e.EXAM_LV, e.EXAM_TIME, e.GRA,
+               u.USER_NAME, u.NAME,
+               sub.CODE_DESC as SUBJECT_TYPE_DESC,
+               el.CODE_DESC as EXAM_LV_DESC
+        FROM g_exam e
+                 LEFT JOIN g_user u ON e.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sub ON e.SUBJECT_TYPE = sub.CODE_ID
+                 LEFT JOIN g_code el ON e.EXAM_LV = el.CODE_ID
+        WHERE e.EXAM_NAME LIKE CONCAT('%', #{examName}, '%')
+          AND e.SUBJECT_TYPE = #{subjectType}
+        ORDER BY e.EXAM_TIME DESC
+    </select>
 </mapper>

@@ -133,7 +133,41 @@
         WHERE USER_ID = #{userId}
     </update>
 
-    <select id="selectStudentIdByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    <select id="selectStudentIdByUserId" resultType="java.lang.Long" parameterType="java.lang.Long">
         SELECT STUDENT_ID FROM zw_student WHERE USER_ID = #{userId}
+    </select>
+    
+    <!-- 根据学号查询学生 -->
+    <select id="searchByStudentCode" resultMap="StudentVOResultMap">
+        SELECT s.STUDENT_ID, s.USER_ID, s.STUDENT_CODE, s.EMAIL, s.SEX, s.STUDENT_STATUS, 
+               s.STUDENT_TYPE, s.PHONE, s.GRA, s.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ss.CODE_DESC as STUDENT_STATUS_DESC,
+               st.CODE_DESC as STUDENT_TYPE_DESC
+        FROM zw_student s
+                 LEFT JOIN g_user u ON s.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON s.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ss ON s.STUDENT_STATUS = ss.CODE_ID
+                 LEFT JOIN g_code st ON s.STUDENT_TYPE = st.CODE_ID
+        WHERE s.STUDENT_CODE = #{studentCode}
+        LIMIT 1
+    </select>
+    
+    <!-- 根据用户 ID 查询学生 -->
+    <select id="selectByUserId" resultMap="StudentVOResultMap">
+        SELECT s.STUDENT_ID, s.USER_ID, s.STUDENT_CODE, s.EMAIL, s.SEX, s.STUDENT_STATUS, 
+               s.STUDENT_TYPE, s.PHONE, s.GRA, s.CLA,
+               u.USER_NAME, u.NAME,
+               sex.CODE_DESC as SEX_DESC,
+               ss.CODE_DESC as STUDENT_STATUS_DESC,
+               st.CODE_DESC as STUDENT_TYPE_DESC
+        FROM zw_student s
+                 LEFT JOIN g_user u ON s.USER_ID = u.USER_ID
+                 LEFT JOIN g_code sex ON s.SEX = sex.CODE_ID
+                 LEFT JOIN g_code ss ON s.STUDENT_STATUS = ss.CODE_ID
+                 LEFT JOIN g_code st ON s.STUDENT_TYPE = st.CODE_ID
+        WHERE s.USER_ID = #{userId}
+        LIMIT 1
     </select>
 </mapper>

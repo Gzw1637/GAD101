@@ -8,36 +8,10 @@
       </template>
       
       <div class="search-bar">
-        <el-select
-          v-model="filterGra"
-          placeholder="选择年级"
-          style="width: 120px; margin-right: 10px"
-          clearable
-        >
-          <el-option
-            v-for="grade in gradeOptions"
-            :key="grade.value"
-            :label="grade.label"
-            :value="grade.value"
-          />
-        </el-select>
-        <el-select
-          v-model="filterSubjectType"
-          placeholder="选择学科"
-          style="width: 150px; margin-right: 10px"
-          clearable
-        >
-          <el-option
-            v-for="subject in subjectOptions"
-            :key="subject.value"
-            :label="subject.label"
-            :value="subject.value"
-          />
-        </el-select>
         <el-input
           v-model="filterExamName"
           placeholder="输入考试名称搜索"
-          style="width: 220px; margin-right: 10px"
+          style="width: 200px; margin-right: 10px"
           clearable
           @keyup.enter="handleSearch"
         >
@@ -45,16 +19,51 @@
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
+        <el-input
+          v-model="filterClass"
+          placeholder="输入班级搜索"
+          style="width: 150px; margin-right: 10px"
+          clearable
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+        <el-input
+          v-model="filterStudentName"
+          placeholder="输入学生姓名搜索"
+          style="width: 180px; margin-right: 10px"
+          clearable
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+        <el-select
+          v-model="sortBy"
+          placeholder="排序方式"
+          style="width: 150px; margin-right: 10px"
+          clearable
+        >
+          <el-option label="按年级排名升序" value="gradeRankAsc" />
+          <el-option label="按年级排名降序" value="gradeRankDesc" />
+          <el-option label="按班级排名升序" value="classRankAsc" />
+          <el-option label="按班级排名降序" value="classRankDesc" />
+        </el-select>
         <el-button type="primary" @click="handleSearch">搜索</el-button>
         <el-button @click="resetSearch">重置</el-button>
+        <el-button type="success" @click="handleExport">导出数据</el-button>
       </div>
       
-      <el-table :data="scoreList" style="width: 100%" border v-loading="loading">
+      <el-table :data="scoreList" style="width: 100%" border v-loading="loading" empty-text="暂无数据，请检查筛选条件或联系管理员">
         <el-table-column label="序号" width="80">
           <template #default="scope">
             {{ (currentPage - 1) * pageSize + scope.$index + 1 }}
           </template>
         </el-table-column>
+        <el-table-column prop="examName" label="考试名称" width="200" />
         <el-table-column prop="name" label="学生姓名" width="120" />
         <el-table-column prop="studentCode" label="学号" width="150" />
         <el-table-column label="班级" width="100">
@@ -81,7 +90,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="examName" label="考试名称" width="200" />
+
         <el-table-column prop="examTime" label="考试时间" width="180">
           <template #default="scope">
             {{ formatDate(scope.row.examTime) }}
@@ -111,9 +120,10 @@ import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
 // 筛选条件
-const filterGra = ref(null)
-const filterSubjectType = ref(null)
 const filterExamName = ref('')
+const filterClass = ref('')
+const filterStudentName = ref('')
+const sortBy = ref('')
 
 // 分页数据
 const currentPage = ref(1)
@@ -126,25 +136,7 @@ const scoreList = ref([])
 // 加载状态
 const loading = ref(true)
 
-// 年级选项
-const gradeOptions = [
-  { value: 2025, label: '2025级' },
-  { value: 2026, label: '2026级' },
-  { value: 2027, label: '2027级' }
-]
 
-// 学科选项
-const subjectOptions = [
-  { value: 10111001, label: '语文' },
-  { value: 10111002, label: '数学' },
-  { value: 10111003, label: '英语' },
-  { value: 10111004, label: '物理' },
-  { value: 10111005, label: '历史' },
-  { value: 10111006, label: '化学' },
-  { value: 10111007, label: '生物' },
-  { value: 10111008, label: '地理' },
-  { value: 10111009, label: '政治' }
-]
 
 // 格式化日期
 const formatDate = (date) => {
@@ -165,7 +157,6 @@ const loadScoreList = async () => {
   loading.value = true
   try {
     const params = {
-      subjectType: filterSubjectType.value,
       examName: filterExamName.value
     }
     
@@ -173,17 +164,45 @@ const loadScoreList = async () => {
     if (response.code === 200) {
       let data = response.data || []
       
-      // 如果选择了年级，进行前端过滤
-      if (filterGra.value) {
-        data = data.filter(score => score.gra === filterGra.value)
+      // 前端过滤
+      if (filterClass.value) {
+        data = data.filter(score => score.cla.toString().includes(filterClass.value))
+      }
+      if (filterStudentName.value) {
+        data = data.filter(score => score.name.includes(filterStudentName.value))
       }
       
-      // 按考试时间排序
-      const sortedList = data.sort((a, b) => {
-        const timeA = a.examTime ? new Date(a.examTime).getTime() : 0
-        const timeB = b.examTime ? new Date(b.examTime).getTime() : 0
-        return timeB - timeA
-      })
+      // 排序处理
+      let sortedList = data
+      if (sortBy.value) {
+        sortedList = data.sort((a, b) => {
+          if (sortBy.value === 'gradeRankAsc') {
+            const rankA = a.gradeRank || 999999
+            const rankB = b.gradeRank || 999999
+            return rankA - rankB
+          } else if (sortBy.value === 'gradeRankDesc') {
+            const rankA = a.gradeRank || 999999
+            const rankB = b.gradeRank || 999999
+            return rankB - rankA
+          } else if (sortBy.value === 'classRankAsc') {
+            const rankA = a.classRank || 999999
+            const rankB = b.classRank || 999999
+            return rankA - rankB
+          } else if (sortBy.value === 'classRankDesc') {
+            const rankA = a.classRank || 999999
+            const rankB = b.classRank || 999999
+            return rankB - rankA
+          }
+          return 0
+        })
+      } else {
+        // 默认按考试时间排序
+        sortedList = data.sort((a, b) => {
+          const timeA = a.examTime ? new Date(a.examTime).getTime() : 0
+          const timeB = b.examTime ? new Date(b.examTime).getTime() : 0
+          return timeB - timeA
+        })
+      }
       
       // 设置总数
       total.value = sortedList.length
@@ -192,12 +211,50 @@ const loadScoreList = async () => {
       const startIndex = (currentPage.value - 1) * pageSize.value
       const endIndex = startIndex + pageSize.value
       scoreList.value = sortedList.slice(startIndex, endIndex)
+      
+      // 如果没有数据，显示提示
+      if (sortedList.length === 0) {
+        ElMessage.info('未找到符合条件的成绩数据')
+      }
+    } else {
+      // 处理后端返回的错误
+      ElMessage.error(response.msg || '获取成绩失败')
     }
   } catch (error) {
     console.error('获取成绩列表失败:', error)
-    ElMessage.error('获取成绩列表失败')
+    ElMessage.error('网络错误，请检查网络连接')
   } finally {
     loading.value = false
+  }
+}
+
+// 导出数据
+const handleExport = async () => {
+  try {
+    // 构建查询参数
+    const params = {}
+    if (filterExamName.value) params.examName = filterExamName.value
+    if (sortBy.value) params.sortBy = sortBy.value
+    
+    const response = await request.post('/api/teacher/export-scores', null, {
+      params,
+      responseType: 'blob'
+    })
+    
+    const blob = new Blob([response], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '教师成绩数据.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+    
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出数据失败:', error)
+    ElMessage.error('导出数据失败')
   }
 }
 
@@ -209,9 +266,9 @@ const handleSearch = () => {
 
 // 重置搜索
 const resetSearch = () => {
-  filterGra.value = null
-  filterSubjectType.value = null
   filterExamName.value = ''
+  filterClass.value = ''
+  filterStudentName.value = ''
   currentPage.value = 1
   loadScoreList()
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.AiAnalysisMapper">
+
+    <resultMap id="AiAnalysisRecordMap" type="org.gzw.backend.entity.AiAnalysisRecord">
+        <result column="ANALYSIS_ID" property="analysisId"/>
+        <result column="EXAM_ID" property="examId"/>
+        <result column="TEACHER_ID" property="teacherId"/>
+        <result column="ANALYSIS_TYPE" property="analysisType"/>
+        <result column="ANALYSIS_CONTENT" property="analysisContent"/>
+        <result column="STUDENT_ID" property="studentId"/>
+        <result column="IMAGE_URL" property="imageUrl"/>
+        <result column="CREATE_TIME" property="createTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.AiAnalysisRecord" useGeneratedKeys="true" keyProperty="analysisId">
+        INSERT INTO ai_analysis_record (
+            EXAM_ID,
+            TEACHER_ID,
+            ANALYSIS_TYPE,
+            ANALYSIS_CONTENT,
+            STUDENT_ID,
+            IMAGE_URL,
+            CREATE_TIME
+        ) VALUES (
+            #{examId},
+            #{teacherId},
+            #{analysisType},
+            #{analysisContent},
+            #{studentId},
+            #{imageUrl},
+            #{createTime}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="AiAnalysisRecordMap">
+        SELECT *
+        FROM ai_analysis_record
+        WHERE ANALYSIS_ID = #{analysisId}
+    </select>
+
+    <select id="selectByExamId" resultMap="AiAnalysisRecordMap">
+        SELECT *
+        FROM ai_analysis_record
+        WHERE EXAM_ID = #{examId}
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="selectByTeacherId" resultMap="AiAnalysisRecordMap">
+        SELECT *
+        FROM ai_analysis_record
+        WHERE TEACHER_ID = #{teacherId}
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="selectByExamIdAndType" resultMap="AiAnalysisRecordMap">
+        SELECT *
+        FROM ai_analysis_record
+        WHERE EXAM_ID = #{examId}
+          AND ANALYSIS_TYPE = #{analysisType}
+        ORDER BY CREATE_TIME DESC
+        LIMIT 1
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM ai_analysis_record
+        WHERE ANALYSIS_ID = #{analysisId}
+    </delete>
+
+</mapper>

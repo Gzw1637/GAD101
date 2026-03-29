@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gzw.backend.mapper.StudentExamPaperMapper">
+
+    <resultMap id="StudentExamPaperMap" type="org.gzw.backend.entity.StudentExamPaper">
+        <result column="PAPER_ID" property="paperId"/>
+        <result column="STUDENT_ID" property="studentId"/>
+        <result column="EXAM_ID" property="examId"/>
+        <result column="PAPER_IMAGE_URL" property="paperImageUrl"/>
+        <result column="OCR_RESULT" property="ocrResult"/>
+        <result column="AI_ANALYSIS" property="aiAnalysis"/>
+        <result column="UPLOAD_TIME" property="uploadTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="org.gzw.backend.entity.StudentExamPaper" useGeneratedKeys="true" keyProperty="paperId">
+        INSERT INTO student_exam_paper (
+            STUDENT_ID,
+            EXAM_ID,
+            PAPER_IMAGE_URL,
+            OCR_RESULT,
+            AI_ANALYSIS,
+            UPLOAD_TIME
+        ) VALUES (
+            #{studentId},
+            #{examId},
+            #{paperImageUrl},
+            #{ocrResult},
+            #{aiAnalysis},
+            #{uploadTime}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="StudentExamPaperMap">
+        SELECT *
+        FROM student_exam_paper
+        WHERE PAPER_ID = #{paperId}
+    </select>
+
+    <select id="selectByStudentAndExam" resultMap="StudentExamPaperMap">
+        SELECT *
+        FROM student_exam_paper
+        WHERE STUDENT_ID = #{studentId}
+          AND EXAM_ID = #{examId}
+        ORDER BY UPLOAD_TIME DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectByExamId" resultMap="StudentExamPaperMap">
+        SELECT *
+        FROM student_exam_paper
+        WHERE EXAM_ID = #{examId}
+        ORDER BY UPLOAD_TIME DESC
+    </select>
+
+    <select id="selectByStudentId" resultMap="StudentExamPaperMap">
+        SELECT *
+        FROM student_exam_paper
+        WHERE STUDENT_ID = #{studentId}
+        ORDER BY UPLOAD_TIME DESC
+    </select>
+
+    <update id="updateOcrResult">
+        UPDATE student_exam_paper
+        SET OCR_RESULT = #{ocrResult}
+        WHERE PAPER_ID = #{paperId}
+    </update>
+
+    <update id="updateAiAnalysis">
+        UPDATE student_exam_paper
+        SET AI_ANALYSIS = #{aiAnalysis}
+        WHERE PAPER_ID = #{paperId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM student_exam_paper
+        WHERE PAPER_ID = #{paperId}
+    </delete>
+
+</mapper>

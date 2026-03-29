@@ -75,4 +75,25 @@ public class UserServiceImpl implements UserService {
     public int unlockUser(Long userId) {
         return userMapper.unlockUser(userId);
     }
+
+    @Override
+    public int changePassword(String userName, String oldPassword, String newPassword) {
+        // 根据用户名获取用户信息
+        User user = userMapper.selectByUserName(userName);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        
+        // 验证旧密码是否正确
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("旧密码错误");
+        }
+        
+        // 对新密码进行 BCrypt 加密
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        
+        // 更新用户密码
+        user.setPassword(encodedNewPassword);
+        return userMapper.update(user);
+    }
 }

@@ -6,13 +6,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.gzw.backend.common.Result;
 import org.gzw.backend.entity.Exam;
-import org.gzw.backend.entity.vo.ExamExportVO;
-import org.gzw.backend.entity.vo.ExamImportVO;
-import org.gzw.backend.entity.vo.ExamVO;
-import org.gzw.backend.entity.vo.StudentVO;
+import org.gzw.backend.entity.vo.*;
 import org.gzw.backend.service.ExamService;
 import org.gzw.backend.service.ScoreService;
 import org.gzw.backend.service.StudentService;
+import org.gzw.backend.service.UserService;
+import org.gzw.backend.service.TeacherService;
 import org.gzw.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +37,12 @@ public class ExamController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TeacherService teacherService;
 
     @PostMapping("/add")
     public Result<Integer> addExam(@RequestBody Exam exam) {
@@ -76,9 +81,52 @@ public class ExamController {
     }
 
     @GetMapping("/list")
-    public Result<List<ExamVO>> getAllExams() {
-        List<ExamVO> exams = examService.getAllExams();
-        return Result.success(exams);
+    public Result<List<ExamVO>> listExams(HttpServletRequest request) {
+        try {
+            // 获取当前用户信息
+            String token = getToken(request);
+            Long currentUserId = JwtUtil.getUserIdFromToken(token);
+            
+            // 获取用户信息，判断角色
+            UserVO user = userService.getUserById(currentUserId);
+            if (user == null) {
+                return Result.error(404, "未找到用户信息");
+            }
+            
+            // 如果是管理员，返回所有考试
+            if (user.getRole() == 14981003) {
+                List<ExamVO> exams = examService.getAllExams();
+                return Result.success(exams);
+            }
+            
+            // 如果是教师，按照原来的逻辑过滤
+            TeacherVO teacher = teacherService.getTeacherByUserId(currentUserId);
+            if (teacher == null) {
+                return Result.error(404, "未找到教师信息");
+            }
+            
+            // 获取教师所在年级和负责科目
+            Integer userGrade = teacher.getGra();
+            List<Integer> userSubjects = new ArrayList<>();
+            userSubjects.add(teacher.getTeachSubject());
+            
+            // 查询考试列表，添加过滤条件
+            List<ExamVO> exams = examService.selectByUserGradeAndSubjects(userGrade, userSubjects);
+            return Result.success(exams);
+        } catch (Exception e) {
+            return Result.error(500, "查询考试列表失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取请求中的 token
+     */
+    private String getToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return token;
     }
 
     @GetMapping("/my-list")
@@ -113,6 +161,21 @@ public class ExamController {
             return Result.success(exams);
         } catch (Exception e) {
             return Result.error(500, "获取考试列表失败：" + e.getMessage());
+        }
+    }
+    
+    /**
+     * 根据考试名称和科目查询考试
+     */
+    @GetMapping("/search")
+    public Result<List<ExamVO>> searchExams(
+            @RequestParam("examName") String examName,
+            @RequestParam("subjectType") Integer subjectType) {
+        try {
+            List<ExamVO> exams = examService.searchByExamNameAndSubject(examName, subjectType);
+            return Result.success(exams);
+        } catch (Exception e) {
+            return Result.error(500, "查询考试失败：" + e.getMessage());
         }
     }
 

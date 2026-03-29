@@ -5,7 +5,6 @@ import org.gzw.backend.entity.vo.ExamImportVO;
 import org.gzw.backend.entity.vo.ExamVO;
 import org.gzw.backend.mapper.ExamMapper;
 import org.gzw.backend.mapper.TeacherMapper;
-import org.gzw.backend.mapper.UserMapper;
 import org.gzw.backend.service.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,8 +62,13 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public List<ExamVO> getAllExams() {
+    public List<ExamVO> selectAll() {
         return examMapper.selectAll();
+    }
+
+    @Override
+    public List<ExamVO> selectByUserGradeAndSubjects(Integer grade, List<Integer> subjects) {
+        return examMapper.selectByUserGradeAndSubjects(grade, subjects);
     }
 
     @Override
@@ -169,5 +173,15 @@ public class ExamServiceImpl implements ExamService {
             return teachers.get(0).getUserId();
         }
         return null;
+    }
+    
+    @Override
+    public List<ExamVO> searchByExamNameAndSubject(String examName, Integer subjectType) {
+        return examMapper.searchByExamNameAndSubject(examName, subjectType);
+    }
+    
+    @Override
+    public List<ExamVO> getAllExams() {
+        return examMapper.selectAll();
     }
 }

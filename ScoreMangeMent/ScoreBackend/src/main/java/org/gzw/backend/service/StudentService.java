@@ -23,4 +23,8 @@ public interface StudentService {
     List<StudentExportVO> exportStudents(Integer gra, Integer cla, Integer studentType, String name);
     
     int importStudents(List<StudentImportVO> students);
+    
+    StudentVO searchByStudentCode(String studentCode);
+    
+    StudentVO getStudentByUserId(Long userId);
 }

@@ -51,9 +51,7 @@
       </el-menu-item>
     </template>
     
-    <div class="admin-content">
-      <RouterView />
-    </div>
+    <!-- 内容会通过 Layout 组件的 router-view 显示 -->
   </Layout>
 </template>
 
